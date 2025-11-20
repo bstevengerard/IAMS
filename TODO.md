@@ -1,2 +1,0 @@
-- [x] Create Footer.js component in IAMS/frontend/src/components/ with basic copyright text and Tailwind styling
-- [x] Update App.js to import Footer and add <Footer /> after </Routes>
