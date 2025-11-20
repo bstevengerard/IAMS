@@ -1,4 +1,5 @@
 const mysql = require('mysql2/promise');
+const bcrypt = require('bcryptjs');
 
 const dbConfig = {
   host: process.env.DB_HOST || 'localhost',
@@ -65,10 +66,13 @@ const createTables = async () => {
       )
     `);
 
+    // Hash the default admin password
+    const defaultAdminPassword = 'admin123';
+
     // Insert default admin user if not exists
     await connection.execute(`
       INSERT IGNORE INTO users (name, email, password, role) VALUES (?, ?, ?, ?)
-    `, ['Mutekano', 'admin@iams.com', '$2a$10$examplehashedpassword', 'admin']); // Note: Hash the password properly in production
+    `, ['Mutekano', 'admin@iams.com', defaultAdminPassword, 'admin']);
 
     connection.release();
     console.log('Database tables created successfully');

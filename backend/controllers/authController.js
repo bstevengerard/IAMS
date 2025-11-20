@@ -1,4 +1,3 @@
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { getConnection } = require('../dbSetup');
 const { JWT_SECRET } = require('../middleware/auth');
@@ -8,11 +7,10 @@ const register = async (req, res) => {
 
   try {
     const connection = await getConnection();
-    const hashedPassword = await bcrypt.hash(password, 10);
 
     await connection.execute(
       'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
-      [name, email, hashedPassword, role || 'security']
+      [name, email, password, role || 'security']
     );
 
     connection.release();
@@ -39,9 +37,8 @@ const login = async (req, res) => {
     }
 
     const user = rows[0];
-    const isValidPassword = await bcrypt.compare(password, user.password);
 
-    if (!isValidPassword) {
+    if (password !== user.password) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 

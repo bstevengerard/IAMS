@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const http = require('http'); // Import the http module
 const { createTables } = require('./dbSetup');
 const { init } = require('./socket');
 
@@ -9,6 +10,7 @@ const userRoutes = require('./routes/users');
 const attendanceRoutes = require('./routes/attendance');
 
 const app = express();
+const server = http.createServer(app); // Create an HTTP server from the Express app
 const PORT = process.env.PORT || 5000;
 
 // Middleware
@@ -36,7 +38,11 @@ app.use((err, req, res, next) => {
 const startServer = async () => {
   try {
     await createTables();
-    app.listen(PORT, () => {
+    
+    // Initialize Socket.IO with the server
+    init(server);
+
+    server.listen(PORT, () => { // Listen on the http server, not the Express app
       console.log(`Server is running on port ${PORT}`);
     });
   } catch (error) {
